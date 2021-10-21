@@ -1,0 +1,122 @@
+.apidoc-page {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+}
+
+.apidoc-page > * {
+    height: 100%;
+}
+
+.apidoc-page .side {
+    min-width: 12vw;
+    background-color: #3e3e3e;
+    color: white;
+    width: max-content;
+    overflow-y: auto;
+}
+
+.apidoc-page .side h4 {
+    background-color: rgb(83, 83, 83);
+    color: white;
+    padding: 15px 15px;
+    margin: 0;
+    font-weight: normal;
+}
+
+.apidoc-page .endpoint {
+    align-items: center;
+}
+
+.apidoc-page .side .endpoint {
+    font-size: 14px;
+    padding: 15px;
+    cursor: pointer;
+}
+
+.apidoc-page .method-label {
+    background-color: rgb(112, 127, 212);
+    font-weight: bold;
+    padding: 3px 7px;
+    border-radius: 2px;
+    margin-right: 5px;
+    font-size: 12px;
+    color: white;
+}
+.apidoc-page .method-label.POST {
+    background-color: rgb(149, 212, 112);
+}
+.apidoc-page .method-label.DELETE {
+    background-color: rgb(226, 57, 57);
+}
+.apidoc-page .method-label.PUT {
+    background-color: rgb(226, 139, 57);
+}
+.apidoc-page .method-label.PATCH {
+    background-color: rgb(136, 57, 226);
+}
+
+.apidoc-page .side .endpoint-name {
+    flex: 1;
+    text-align: right;
+}
+
+.apidoc-page .content {
+    flex: 1;
+    background-color: whitesmoke;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.apidoc-page .content h4 {
+    text-transform: uppercase;
+    font-size: 24px;
+    border-bottom: solid 1px lightgray;
+}
+
+.apidoc-page .content .endpoint-data {
+    padding-bottom: 40px;
+    border-bottom: dashed 1px lightgray;
+    margin-bottom: 40px;
+}
+
+.apidoc-page .content .endpoint {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.apidoc-page .content .table {
+    margin: 30px 0;
+    background-color: white;
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow: 2px 2px 5px rgba(0,0,0,.1);
+}
+
+.apidoc-page .content .table .table-row {
+    display: flex;
+    align-items: stretch;
+}
+
+.apidoc-page .content .table .table-row .table-col {
+    flex: 1;
+    border: solid 1px lightgray;
+    padding: 10px 15px;
+    font-size: 15px;
+}
+.apidoc-page .content .table .table-row .table-col.large-col {
+    flex: 2.5;
+}
+
+.apidoc-page .content .table .table-row .table-col.top-col {
+    background-color: #3e3e3e;
+    color: white;
+}
+
+.apidoc-page .content .response-preview {
+    background-color: #3e3e3e;
+    color: white;
+    padding: 30px;
+    font-family: monospace;
+    white-space: pre-wrap;
+}

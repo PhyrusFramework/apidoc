@@ -1,0 +1,19 @@
+{
+    "name": "phyrus/apidoc",
+    "version": "0.0.5",
+    "description": "Phyrus API Documentation module",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Phyrus",
+            "email": "framework@phyrus.org"
+        }
+    ],
+    "autoload": {
+        "files": ["/index.php"]
+    },
+    "require": {
+        "phyrus/framework": "^0.0.5"
+    }
+}
