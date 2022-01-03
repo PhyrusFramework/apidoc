@@ -1,16 +1,17 @@
 <?php
 
-class Apidoc {
+class ApidocController extends Controller {
 
-    private static $tree;
+    private $tree;
+    private $counter = 0;
 
-    private static function initTree() {
-        self::$tree = [
+    private function initTree() {
+        $this->tree = [
             '__no_section__' => []    
         ];
     }
 
-    private static function findFiles(string $path) {
+    private function findFiles(string $path) {
 
         $list = [];
 
@@ -21,7 +22,7 @@ class Apidoc {
 
         $sub = subfolders($path);
         foreach($sub as $s) {
-            $l = self::findFiles($s);
+            $l = $this->findFiles($s);
             foreach($l as $item) {
                 $list[] = $item;
             }
@@ -31,7 +32,7 @@ class Apidoc {
 
     }
 
-    private static function parseFile(string $path) {
+    private function parseFile(string $path) {
 
         $json = JSON::fromFile($path)->toArray();
 
@@ -40,13 +41,12 @@ class Apidoc {
         }
 
         $section = $json['section'] ?? '__no_section__';
-
         $auth = $json['authentication'] ?? null;
 
         // --------------
 
-        if (!isset(self::$tree[$section])) {
-            self::$tree[$section] = [];
+        if (!isset($this->tree[$section])) {
+            $this->tree[$section] = [];
         }
 
         $rel = str_replace(Path::pages(), '', $path);
@@ -64,45 +64,53 @@ class Apidoc {
                 $newPath = str_replace('~', $route, $newPath);
                 $data['path'] = $newPath;
             }
+            $data['id'] = "e$this->counter";
+
             $methods[$method] = $data;
         }
 
-        self::$tree[$section][] = [
+        $this->tree[$section][] = [
             'auth' => $auth,
             'methods' => $methods
         ];
 
     }
 
-    private static function getTree() {
+    private function getTree() {
 
-        self::initTree();
+        $this->initTree();
 
-        $files = self::findFiles(Path::pages());
+        $files = $this->findFiles(Path::pages());
 
         foreach($files as $file) {
-            self::parseFile($file);
+            $this->parseFile($file);
         }
 
     }
 
-    public static function display($options = []) {
+    public function init() {
+        GoogleFonts::use('Roboto');
+        Assets::include_css(Path::toRelative(__DIR__) . '/assets/apidoc.min.css');
+        Assets::include_js(Path::toRelative(__DIR__) . '/assets/apidoc.js', true);
+        $this->ajax = ['getApidocData'];
+    }
 
-        self::getTree();
+    public function display() {
+        view(__DIR__ . '/view.php');
+    }
 
-        $ops = Arr::instance($options)->force([
+    public function getApidocData($req) {
+        $this->getTree();
+
+        $ops = Arr::instance([])->force([
             'title' => Config::get('title'),
             'version' => Config::get('version'),
             'base' => URL::host()
         ])->getArray();
 
-        $ops['tree'] = self::$tree;
+        $ops['sections'] = $this->tree;
 
-        $css = file_get_contents(__DIR__ . '/assets/apidoc.css');
-        echo "<style>$css</style>";
-
-        view(__DIR__ . '/view.php', $ops);
-
+        return $ops;
     }
 
 }

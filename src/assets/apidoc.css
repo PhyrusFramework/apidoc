@@ -4,6 +4,25 @@
     display: flex;
 }
 
+.apidoc-page #apidoc-loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid gray;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: apidoc-spin-loader 2s linear infinite;
+    margin: 40px auto;
+}
+
+@keyframes apidoc-spin-loader {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+.apidoc-page, .apidoc-page * {
+    font-family: 'Roboto';
+}
+
 .apidoc-page > * {
     height: 100%;
 }
@@ -75,14 +94,34 @@
 }
 
 .apidoc-page .content .endpoint-data {
-    padding-bottom: 40px;
+    padding-bottom: 20px;
     border-bottom: dashed 1px lightgray;
-    margin-bottom: 40px;
+    margin-bottom: 35px;
 }
 
 .apidoc-page .content .endpoint {
     font-size: 20px;
     margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.apidoc-page .content .endpoint .endpoint-name {
+    flex: 1;
+}
+
+.apidoc-page .content .endpoint .try-request {
+    text-transform: uppercase;
+    border: solid 1px #3e3e3e;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 5px;
+    cursor: pointer;
+}
+.apidoc-page .content .endpoint .try-request:hover {
+    background-color: #3e3e3e;
+    color: white;
 }
 
 .apidoc-page .content .table {
@@ -108,6 +147,10 @@
     flex: 2.5;
 }
 
+.apidoc-page .content .table .table-row .table-col span.required {
+    color: red;
+}
+
 .apidoc-page .content .table .table-row .table-col.top-col {
     background-color: #3e3e3e;
     color: white;
@@ -119,4 +162,79 @@
     padding: 30px;
     font-family: monospace;
     white-space: pre-wrap;
+}
+
+/* LAUNCHER */
+
+.apidoc-page #apidoc-launcher {
+    position: fixed;
+    z-index: 50;
+    background-color: rgba(0,0,0,.5);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.apidoc-page #apidoc-launcher .apidoc-launcher-content {
+    background-color: white;
+    border-radius: 20px;
+    padding: 30px;
+    min-height: 60%;
+    min-width: 70%;
+    max-height: 80%;
+    overflow-y: auto;
+}
+
+.apidoc-page #apidoc-launcher .apidoc-launcher-content .endpoint {
+    display: flex;
+    align-items: center;
+}
+
+.apidoc-page #apidoc-launcher .apidoc-launcher-content .endpoint .endpoint-name {
+    flex: 1;
+    padding: 3px 5px;
+    border-bottom: solid 1px lightgray;
+}
+
+.apidoc-page #apidoc-launcher .apidoc-launcher-content .endpoint .run-request {
+    color: white;
+    background-color: #4e4e4e;
+    cursor: pointer;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.apidoc-page #apidoc-launcher .apidoc-launcher-content .endpoint .run-request:hover {
+    background-color: #2e2e2e;
+}
+.apidoc-page #apidoc-launcher .apidoc-launcher-content .endpoint .closer {
+    margin-left: 10px;
+    font-weight: bold;
+    transform: scaleY(0.8);
+    cursor: pointer;
+}
+
+.apidoc-page #apidoc-launcher .apidoc-launcher-content .parameters {
+    margin-bottom: 20px;
+}
+.apidoc-page #apidoc-launcher .apidoc-launcher-content .parameters .parameter-row {
+    display: flex;
+}
+.apidoc-page #apidoc-launcher .apidoc-launcher-content .parameters .parameter-row > * {
+    flex: 1;
+}
+.apidoc-page #apidoc-launcher .apidoc-launcher-content .parameters .parameter-row input {
+    width: 100%;
+    padding: 5px;
+}
+.apidoc-page #apidoc-launcher .apidoc-launcher-content .response {
+    background-color: #3e3e3e;
+    color: white;
+    padding: 20px;
+    font-size: 14px;
+    white-space: pre;
 }

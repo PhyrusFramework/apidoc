@@ -1,134 +1,143 @@
 <div class="apidoc-page">
 
-    {{run $counter = 0}}
-    <div class="side">
+    <div id="apidoc-loader" v-if="!tree"></div>
 
-        {{foreach $tree as $section => $endpoints}}
+    <!-- LAUNCHER -->
+    <div id="apidoc-launcher" v-if="launcher">
+        <div class="apidoc-launcher-content">
+            <div class="endpoint">
+                <div class="method-label">
+                    {{ launcher.method }}
+                </div>
+                <div class="endpoint-name">
+                    {{ launcher.path }}
+                </div>
+                <div class="run-request" @click="runRequest()">
+                    Run
+                </div>
+                <div class="closer" @click="launcher = null">X</div>
+            </div>
 
-            {{if $section != '__no_section__'}}
-                <h4>{{$section}}</h4>
-            {{/}}
+            <div class="parameters">
+                <p>{{ ['GET', 'DELETE'].includes(launcher.method) ? 'Parameters' : 'Data' }}:</p>
 
-            {{foreach $endpoints as $endpoint}}
+                <div class="table">
+                    <div class="parameter-row" v-for="(param, index) in launcher.parameters" :key="index">
+                        <div class="parameter-name">
+                            <input v-model="param.name" @keyup="addParam(param)" placeholder="Name">
+                        </div>
+                        <div class="parameter-value">
+                            <input v-model="param.value" @keyup="addParam(param)" placeholder="Value">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                {{foreach $endpoint['methods'] as $method => $data}}
+            <div class="parameters">
+                <p>Headers:</p>
 
-                    {{run $counter += 1}}
-                    <div class="row endpoint" endpointId="e{{$counter}}">
-                        <div class="method-label {{$method}}">{{$method}}</div>
-                        <div class="endpoint-name">{{ $data['name'] ?? $data['path']}}</div>
+                <div class="table">
+                    <div class="parameter-row" v-for="(param, index) in headers" :key="index">
+                        <div class="parameter-name">
+                            <input v-model="param.name" @keyup="addHeader(param)" placeholder="Name">
+                        </div>
+                        <div class="parameter-value">
+                            <input v-model="param.value" @keyup="addHeader(param)" placeholder="Value">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="response" v-html="launcher.response ? launcher.response : 'Run request.'"></div>
+        </div>
+    </div>
+
+    <!-- PAGE -->
+    <div class="side" v-if="tree">
+
+        <div class="apidoc-section" v-for="(section, sectionName) in tree.sections" :key="sectionName">
+
+            <h4 v-if="sectionName != '__no_section__'">
+                {{sectionName}}
+            </h4>
+
+            <div class="apidoc-endpoint" v-for="(endpoint, index) in section" :key="index">
+
+                <div class="apidoc-method" v-for="(method, methodName) in endpoint.methods" :key="methodName">
+
+                    <div class="row endpoint" @click="scrollTo(method.id)">
+                        <div class="method-label" :class="classForMethod(methodName)">{{ methodName }}</div>
+                        <div class="endpoint-name">{{ method.name ? method.name : method.path }}</div>
                     </div>
 
-                {{/}}
+                </div>
 
-            {{/}}
+            </div>
 
-        {{/}}
+        </div>
 
     </div>
 
-    <div  class="content">
+    <div class="content" id="apidoc-content" v-if="tree">
 
-    <?php
-    $whereDesc = function($method, $path, $name, $param) {
-        $where = in_array($method, ['GET', 'DELETE']) ? 'query' : 'data';
+        <div v-for="(section, sectionName) in tree.sections" :key="sectionName">
 
-        if (isset($param['where']) && in_array($param['where'], ['query', 'data', 'url'])) {
-            $where = $param['where'];
-        }
+            <h4 v-if="sectionName != '__no_section__'">
+                {{ sectionName }}
+            </h4>
 
-        if ($where == 'query') {
-            return "<b>Query</b>: $path/?$name=xxx";
-        }
-        if ($where == 'url') {
-            return "<b>URL</b>: url/:$name";
-        }
-        return "<b>DATA</b>: { $name: 'xxx' }";
-    };
+            <div v-for="(endpoint, index) in section" :key="index">
 
-    $colorResponse = function($code) {
-        if ($code >= 200 && $code < 300) {
-            return 'rgb(102, 212, 80)';
-        }
-        if ($code >= 400) {
-            return 'red';
-        }
-        return 'orange';
-    };
-    ?>
+                <div class="endpoint-data" :id="method.id" v-for="(method, methodName) in endpoint.methods" :key="methodName">
 
-    {{run $counter = 0}}
-    {{foreach $tree as $section => $endpoints}}
-
-        {{if $section != '__no_section__'}}
-            <h4>{{$section}}</h4>
-        {{/}}
-
-        {{foreach $endpoints as $endpoint}}
-
-            {{foreach $endpoint['methods'] as $method => $data}}
-            {{run $counter += 1}}
-            <div class="endpoint-data" id="e{{$counter}}">
-
-                <div class="row endpoint">
-                    <div class="method-label {{$method}}">{{$method}}</div>
-                    <div>{{$data['path']}}</div>
-                </div>
-
-                <p>{{ $data['description'] ?? ( $data['name'] ?? '' ) }}</p>
-
-                {{if isset($data['parameters'])}}
-                <div class="table">
-                    <div class="table-row">
-                        <div class="table-col top-col">Parameter</div>
-                        <div class="table-col large-col top-col">Description</div>
-                        <div class="table-col top-col">Type</div>
-                        <div class="table-col top-col">Where</div>
-                        <div class="table-col top-col">Possible values</div>
+                    <div class="endpoint">
+                        <div class="method-label" :class="classForMethod(methodName)">
+                            {{ methodName }}
+                        </div>
+                        <div class="endpoint-name">
+                            {{ method.path }}
+                        </div>
+                        <div class="try-request" @click="launch(method, methodName)">
+                            Try
+                        </div>
                     </div>
 
-                    {{foreach $data['parameters'] as $name => $param}}
-                    <div class="table-row">
-                        <div class="table-col">{{$name}}</div>
-                        <div class="table-col large-col">{{ $param['description'] ?? '' }}</div>
-                        <div class="table-col">{{ $param['type'] ?? 'mixed' }}</div>
-                        <div class="table-col">{{ $whereDesc($method, $data['path'], $name, $param) }}</div>
-                        <div class="table-col">{{ $param['values'] ?? '' }}</div>
+                    <p>{{ method.description }}</p>
+
+                    <div class="table" v-if="method.parameters">
+                        <div class="table-row">
+                            <div class="table-col top-col">Parameter</div>
+                            <div class="table-col large-col top-col">Description</div>
+                            <div class="table-col top-col">Type</div>
+                            <div class="table-col top-col">Where</div>
+                            <div class="table-col top-col">Possible values</div>
+                        </div>
+
+                        <div class="table-row" v-for="(parameter, name) in method.parameters" :key="name">
+                            <div class="table-col">{{name}}
+                                <span v-if="parameter.required" class="required">*</span>
+                            </div>
+                            <div class="table-col large-col">{{ parameter.description ? parameter.description : '' }}</div>
+                            <div class="table-col">{{ parameter.type ? parameter.type : 'mixed' }}</div>
+                            <div class="table-col" v-html="whereDesc(method, parameter)"></div>
+                            <div class="table-col">{{ parameter.values }}</div>
+                        </div>
                     </div>
-                    {{/}}
+
+                    <div v-if="method.responses">
+                        <p>Responses:</p>
+
+                        <div v-for="(response, code) in method.responses">
+                            <p><b :style="{color: responseColor(code)}">{{code}}</b>: {{ response.description }}</p>
+                            <div class="response-preview" v-if="response.example">{{ JSON.stringify(response.example, null, 2) }}</div>
+                        </div>
+                    </div>
+
                 </div>
-                {{/}}
-
-                {{if isset($data['response'])}}
-                <p>Response:</p>
-
-                    {{foreach $data['response'] as $code => $response }}
-                        <p><b style="color: {{ $colorResponse(intval($code)) }}">{{$code}}</b>: {{ $response['description'] ?? ''}}</p>
-                        {{if isset($response['example']) }}
-                        <div class="response-preview">{{ JSON::stringify($response['example'], true) }}</div>
-                        {{/}}
-                    {{/}}
-
-                {{/}}
 
             </div>
-            {{/}}
 
-        {{/}}
-
-    {{/}}
+        </div>
 
     </div>
 </div>
-<script>
-ready(() => {
-    let content = $(".apidoc-page > .content");
-
-    $(".apidoc-page .side .endpoint")
-    .click(function() {
-        let id = $(this).attr('endpointid');
-        let e = $('#'+id);
-        content.scrollTo(e, {margin: 30});
-    });
-});
-</script>

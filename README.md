@@ -4,4 +4,4 @@ This module lets you easily build an API documentation page in your project just
 
     composer require phyrus/apidoc
 
-Find the documentation in: https://phyrus.org/package/apidoc/
+Find the documentation in: https://phyrus.gitbook.io/phyrus-apidoc/

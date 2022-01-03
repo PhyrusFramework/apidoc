@@ -5,12 +5,6 @@
         "default": null,
         "example": "Authentication"
     },
-    "path": {
-        "required": false,
-        "type": "string",
-        "default": "Auto-detected",
-        "example": "/api/login"
-    },
     "authentication": {
         "required": false,
         "type": "string",
@@ -22,12 +16,20 @@
         "type": "object",
         "example": {
             "GET": {
+                "path": {
+                    "required": false,
+                    "type": "string",
+                    "default": "Auto-detected",
+                    "example": "/api/login"
+                },
                 "description": "Obtain user profile data.",
-                "response": {
-                    "ID": 34,
-                    "first_name": "John",
-                    "last_name": "Smith",
-                    "email": "john@smith.com"
+                "responses": {
+                    "200": {
+                        "ID": 34,
+                        "first_name": "John",
+                        "last_name": "Smith",
+                        "email": "john@smith.com"
+                    }
                 }
             },
             "POST": {
